@@ -1,3 +1,5 @@
+using Core;
+using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IProductRepository,ProductRepository>();
 builder.Services.AddDbContext<StoreContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -31,4 +34,19 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+//for creating auto migration and our db again when app runs if not saved prev
+
+using var scope = app.Services.CreateScope();
+var services =scope.ServiceProvider;
+var context = services.GetRequiredService<StoreContext>();
+//log program class
+var logger= services.GetRequiredService<ILogger<Program>>();
+try{
+
+    await context.Database.MigrateAsync();
+    await StoreContextSeedData.SeedData(context);
+
+}catch(Exception ex){
+    logger.LogError(ex,"Application encountered a migration error");
+}
 app.Run();
