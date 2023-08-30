@@ -34,6 +34,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+//to serve images
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
