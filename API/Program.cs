@@ -1,4 +1,7 @@
+using System.CodeDom;
+using System.Reflection;
 using Core;
+using Core.Inerfaces;
 using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +16,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductRepository,ProductRepository>();
+
+builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDbContext<StoreContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
