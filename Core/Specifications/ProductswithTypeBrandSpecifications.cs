@@ -7,7 +7,10 @@ namespace Core.Specifications
         // changing the base parameters values
         public ProductswithTypeBrandSpecifications(ProductSpecsParam productParam) :
         base(
-            x => (!productParam.BrandId.HasValue || x.ProductBrandId == productParam.BrandId) &&
+            x =>
+            //|| or else operator
+            (string.IsNullOrEmpty(productParam.Search) || x.Name.ToLower().Contains(productParam.Search)) &&
+             (!productParam.BrandId.HasValue || x.ProductBrandId == productParam.BrandId) &&
                (!productParam.TypeId.HasValue || x.ProductTypeId == productParam.TypeId)
             )
         {
@@ -15,7 +18,7 @@ namespace Core.Specifications
             AddInclude(x => x.ProductBrand);
             AddOrderBy(x => x.Name);
 
-            AddPagination(productParam.PageSize,(productParam.PageSize * (productParam.PageIndex - 1)));
+            AddPagination(productParam.PageSize, (productParam.PageSize * (productParam.PageIndex - 1)));
             if (productParam.Sort != null)
             {
                 switch (productParam.Sort)

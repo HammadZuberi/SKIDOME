@@ -35,8 +35,10 @@ if (app.Environment.IsDevelopment())
 //to serve images
 app.UseStaticFiles();
 
+
 app.UseHttpsRedirection();
 
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
 
 app.MapControllers();
