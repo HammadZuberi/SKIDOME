@@ -11,12 +11,29 @@ namespace Infrastructure.Data
         {
 
             var query = inputQuery;
+            //order is neccesarry
 
             if (specs.Criteria != null)
             {
 
                 query = query.Where(specs.Criteria); // p=> p.producttypeid=typeid;
 
+            }
+
+            if (specs.OrderBy != null)
+            {
+                query = query.OrderBy(specs.OrderBy);
+            }
+
+            if (specs.OrderByDesc != null)
+            {
+                query = query.OrderByDescending(specs.OrderByDesc);
+            }
+
+
+            if (specs.IsPagingEnabled)
+            {
+                query = query.Skip(specs.Skip).Take(specs.Take);
             }
 
             //concat all includes present in a query loop through current and include

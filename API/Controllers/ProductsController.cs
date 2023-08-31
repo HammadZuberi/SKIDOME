@@ -15,6 +15,7 @@ using API.DTOs;
 using AutoMapper;
 using API.Errors;
 using System.Net;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -40,21 +41,29 @@ namespace API.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts()
+        public async Task<ActionResult<IReadOnlyList<ProductToReturnDTO>>> GetProducts
+        ([FromQuery] ProductSpecsParam productParam)
         {
-            var specs = new ProductswithTypeBrandSpecifications();
+            var specs = new ProductswithTypeBrandSpecifications(productParam);
+
+            var countspecs = new ProductsfilterswithPagingspecification(productParam);
+            var totalItems = await _productRepo.GetCount(countspecs);
 
             // var products = await _productRepo.getListAllAsync();
-
             var products = await _productRepo.ListAsync(specs);
-            return Ok(_mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDTO>>(products));
+
+            var Data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDTO>>(products);
+
+            var response = new Pagination<ProductToReturnDTO>(productParam.PageIndex, productParam.PageSize, totalItems, Data);
+
+            return Ok(response);
         }
 
 
         [HttpGet("{id}")]
         //producing swager doc for error response not mandatory for all but noce to have
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiExceptions) ,StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiExceptions), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductToReturnDTO>> GetProduct(int id)
         {
 
