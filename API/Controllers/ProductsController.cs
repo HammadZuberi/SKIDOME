@@ -13,12 +13,14 @@ using Core.Specifications;
 using System.Runtime.InteropServices;
 using API.DTOs;
 using AutoMapper;
+using API.Errors;
+using System.Net;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+    // [ApiController]
+    // [Route("api/[controller]")]
+    public class ProductsController : BaseApiController
     {
 
 
@@ -45,11 +47,14 @@ namespace API.Controllers
             // var products = await _productRepo.getListAllAsync();
 
             var products = await _productRepo.ListAsync(specs);
-            return Ok(_mapper.Map<IReadOnlyList<Product> , IReadOnlyList<ProductToReturnDTO>>(products));
+            return Ok(_mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDTO>>(products));
         }
 
 
         [HttpGet("{id}")]
+        //producing swager doc for error response not mandatory for all but noce to have
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiExceptions) ,StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductToReturnDTO>> GetProduct(int id)
         {
 
@@ -57,6 +62,8 @@ namespace API.Controllers
             // var products = await _productRepo.getbyIdAsync(id);
             var products = await _productRepo.GetEntityWithSpecification(specs);
 
+            if (products == null)
+                return NotFound(new ApiExceptions(404));
             return Ok(_mapper.Map<Product, ProductToReturnDTO>(products));
         }
 
