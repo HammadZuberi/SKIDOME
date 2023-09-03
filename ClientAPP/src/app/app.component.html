@@ -1,3 +1,14 @@
-
+<app-nav-bar-app></app-nav-bar-app>
 <!-- // accessing client component method from class known as interpolation -->
-<h1> Welcome to {{title}}</h1>
+
+<div  class="Content" style="margin-top: 140px;">
+
+    <h1> Welcome to {{title}}</h1>
+<div> <ul>
+
+    <li class="list-unstyled" *ngFor="let product of products"> 
+
+        {{product.name}}
+    </li>
+</ul></div>
+</div>
