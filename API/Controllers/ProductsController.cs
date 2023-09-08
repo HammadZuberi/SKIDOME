@@ -32,7 +32,7 @@ namespace API.Controllers
         public ProductsController(IGenericRepository<Product> productRepo, IGenericRepository<ProductBrand> brandRepo
         , IGenericRepository<ProductType> typeRepo, IMapper mapper)
         {
-            // _context = context;
+            //_context = context;
             _productRepo = productRepo;
             _brandRepo = brandRepo;
             _typeRepo = typeRepo;
@@ -49,7 +49,7 @@ namespace API.Controllers
             var countspecs = new ProductsfilterswithPagingspecification(productParam);
             var totalItems = await _productRepo.GetCount(countspecs);
 
-            // var products = await _productRepo.getListAllAsync();
+             //var products2 = await _productRepo.getListAllAsync();
             var products = await _productRepo.ListAsync(specs);
 
             var Data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDTO>>(products);
@@ -92,5 +92,8 @@ namespace API.Controllers
             var products = await _typeRepo.getListAllAsync();
             return Ok(products);
         }
+
+        
+
     }
 }

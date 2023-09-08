@@ -16,9 +16,8 @@ namespace Core.Specifications
         {
             AddInclude(x => x.ProductType);
             AddInclude(x => x.ProductBrand);
-            AddOrderBy(x => x.Name);
 
-            AddPagination(productParam.PageSize, (productParam.PageSize * (productParam.PageIndex - 1)));
+
             if (productParam.Sort != null)
             {
                 switch (productParam.Sort)
@@ -36,6 +35,11 @@ namespace Core.Specifications
 
 
             }
+            else
+                AddOrderBy(x => x.Name);
+                
+            AddPagination(productParam.PageSize, (productParam.PageSize * (productParam.PageIndex - 1)));
+
 
 
         }

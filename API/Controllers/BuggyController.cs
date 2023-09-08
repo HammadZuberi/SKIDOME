@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Data;
 using API.Errors;
+using Microsoft.EntityFrameworkCore;
+using Core.Entities;
 
 namespace API.Controllers
 {
@@ -82,6 +84,13 @@ namespace API.Controllers
         //     }
         // }
 
+        [HttpGet("types")]
+        public async Task<ActionResult<IReadOnlyList<Product>>> GetProductTypes()
+        {
 
+            var products = await iRep.Products.ToListAsync();
+        products.OrderBy(p=> p.Price);
+            return Ok(products);
+        }
     }
 }
