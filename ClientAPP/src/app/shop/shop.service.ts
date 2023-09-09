@@ -21,6 +21,7 @@ baseurl = 'https://localhost:5001/api/';
     let params= new HttpParams();
   if (prodParam.TypeId) params= params.append("typeId",prodParam.TypeId);
   if (prodParam.BrandId>0) params= params.append("brandId",prodParam.BrandId);
+  if (prodParam.search) params= params.append("search",prodParam.search);
    params= params.append("sort",prodParam.SortOptions);
   params= params.append("pageSize",prodParam.pageSize);
   params= params.append("pageIndex",prodParam.pageNumber);

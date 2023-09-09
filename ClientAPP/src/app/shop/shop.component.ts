@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ShopService } from './shop.service';
 import { Product } from '../shared/Models/Product';
 import { Brand } from '../shared/Models/Brand';
@@ -20,7 +20,7 @@ shopParams =new productParam();
  {name:"price: High to Low",value:"priceDesc"},
  {name:"price: Low to High",value:"priceAsc"}];
  totalNumber =0;
- 
+ @ViewChild('search') search? :ElementRef;
 constructor (private shopService:ShopService){
 
 }
@@ -66,18 +66,18 @@ this.getTypes();
 
 
   onBrandSelected(BrandId:number){
-this.shopParams.BrandId=BrandId;
+this.shopParams.BrandId=BrandId;this.shopParams.pageNumber=1;
 this.getProducts();
   }
 
   onTypeSelected(TypeId:number){
-    this.shopParams.TypeId=TypeId;
+    this.shopParams.TypeId=TypeId;this.shopParams.pageNumber=1;
     this.getProducts();
 
   }
 
   onSortSelected(event:any){
-this.shopParams.SortOptions=event.target.value;
+this.shopParams.SortOptions=event.target.value;this.shopParams.pageNumber=1;
 this.getProducts();
   }
 
@@ -88,6 +88,22 @@ this.getProducts();
       
       this.getProducts();
     }
+
+  }
+
+  onSearch(){
+
+    this.shopParams.search =this.search?.nativeElement.value;
+    this.shopParams.pageNumber=1;
+    this.getProducts();
+  }
+
+  onReset(){
+    if(this.search)
+    this.search.nativeElement.value='';
+  this.shopParams= new productParam();
+  this.getProducts();
+
 
   }
 }

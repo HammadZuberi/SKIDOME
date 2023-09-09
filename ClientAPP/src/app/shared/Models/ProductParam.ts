@@ -4,5 +4,5 @@ export class productParam{
     SortOptions:string="name";
     pageNumber=1;
     pageSize=6;
-
+    search:string=""
 }
