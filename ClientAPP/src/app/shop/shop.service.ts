@@ -4,6 +4,7 @@ import { Pagination } from '../shared/Models/Pagination';
 import { Product } from '../shared/Models/Product';
 import { Brand } from '../shared/Models/Brand';
 import { Type } from '../shared/Models/Type';
+import { productParam } from '../shared/Models/ProductParam';
 
 @Injectable({
   providedIn: 'root'
@@ -15,13 +16,14 @@ baseurl = 'https://localhost:5001/api/';
 
   }
   
-  getProducts(BrandId?:number,TypeId?:number,SortOptions?:string){
+  getProducts(prodParam:productParam){
 
     let params= new HttpParams();
-  if (TypeId) params= params.append("typeId",TypeId);
-  if (BrandId) params= params.append("brandId",BrandId);
-  if (SortOptions) params= params.append("sort",SortOptions);
-  params= params.append("pageSize",50)
+  if (prodParam.TypeId) params= params.append("typeId",prodParam.TypeId);
+  if (prodParam.BrandId>0) params= params.append("brandId",prodParam.BrandId);
+   params= params.append("sort",prodParam.SortOptions);
+  params= params.append("pageSize",prodParam.pageSize);
+  params= params.append("pageIndex",prodParam.pageNumber);
 
 
       return this.http.get<Pagination<Product[]>>(this.baseurl+'products',{params:params});

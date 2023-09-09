@@ -54,7 +54,7 @@ namespace API.Controllers
 
             var Data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDTO>>(products);
 
-            var response = new Pagination<ProductToReturnDTO>(productParam.PageIndex, productParam.PageSize, totalItems, Data);
+            var response = new Pagination<ProductToReturnDTO>( productParam.PageSize,productParam.PageIndex, totalItems, Data);
 
             return Ok(response);
         }
