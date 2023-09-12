@@ -64,7 +64,7 @@ namespace API.Controllers
         //producing swager doc for error response not mandatory for all but noce to have
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiExceptions), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductToReturnDTO>> GetProduct(int id)
+        public async Task<ActionResult<ProductToReturnDTO>> GetProducts(int id)
         {
 
             var specs = new ProductswithTypeBrandSpecifications(id);

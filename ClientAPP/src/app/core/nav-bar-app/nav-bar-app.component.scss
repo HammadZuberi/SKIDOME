@@ -11,3 +11,14 @@
     color: white;
     text-align: center;
 }
+a{
+    color: black;
+    text-decoration: solid;
+    &.active{
+text-decoration: underline;
+        color: purple;
+    }
+}
+.logo {
+    cursor: pointer;
+}

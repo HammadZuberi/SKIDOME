@@ -30,6 +30,14 @@ baseurl = 'https://localhost:5001/api/';
       return this.http.get<Pagination<Product[]>>(this.baseurl+'products',{params:params});
   }
 
+  getProductsById(id:number){
+
+    // let params= new HttpParams();
+    // params= params.append("id",id);
+    
+    return this.http.get<Product>(this.baseurl+'Products/'+id);
+  }
+
   getBrands(){
     return this.http.get<Brand[]>(this.baseurl+'products/brands');
   }

@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Product } from 'src/app/shared/Models/Product';
 
 @Component({
@@ -9,7 +8,7 @@ import { Product } from 'src/app/shared/Models/Product';
 })
 export class ProductItemComponent {
   @Input()  product?: Product;
-  sanitizer = DomSanitizer;
+  
   constructor(){
 
   }
