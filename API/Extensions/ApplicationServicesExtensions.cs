@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace API.Extensions
 {
@@ -35,6 +37,13 @@ namespace API.Extensions
                 opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
 
+            Services.AddSingleton<IConnectionMultiplexer>(c =>
+            {
+                var option = ConfigurationOptions.Parse(config.GetConnectionString("Redis"));
+                return ConnectionMultiplexer.Connect(option);
+            });
+            
+            Services.AddScoped<IBasketRepository,BasketRepository>();
             // for overridding the normal behavior of the validation error by api controller pass the clubed error 
             Services.Configure<ApiBehaviorOptions>(option =>
             {
