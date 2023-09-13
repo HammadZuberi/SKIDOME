@@ -26,7 +26,7 @@ constructor (private shopService:ShopService){
 }
   ngOnInit(): void {
 this.getProducts();
-console.log(this.shopParams);
+// console.log(this.shopParams);
 this.getBrands();
 this.getTypes();
 
@@ -42,8 +42,8 @@ this.getTypes();
       this.shopParams.pageSize =response.pageSize;
       this.shopParams.pageNumber =response.pageIndex;
       this.totalNumber= response.count;
-      console.log(this.shopParams);
-      console.log(response);
+      // console.log(this.shopParams);
+      // console.log(response);
       },
       error: e=> console.error(e)      
     });

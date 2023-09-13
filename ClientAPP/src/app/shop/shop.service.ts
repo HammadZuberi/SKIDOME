@@ -44,4 +44,20 @@ baseurl = 'https://localhost:5001/api/';
   getTypes(){
     return this.http.get<Type[]>(this.baseurl+'products/Types');
 
-}}
+}
+
+getImagefromUrl(src:string ):string{
+
+  this.http.get(src, { responseType: 'blob' }).subscribe(response => {
+    // Handle the image response here, e.g., display it in your template
+    const reader = new FileReader();
+    reader.onload = () => {
+      src = reader.result as string;
+    };
+    reader.readAsDataURL(response);
+  });
+
+  return src;
+}
+
+}

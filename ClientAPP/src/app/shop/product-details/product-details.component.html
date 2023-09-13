@@ -1,10 +1,19 @@
 <div class="row" *ngIf="product">
     <div class="col-6">
-        <img src="{{(product.pictureUrl)}}" alt="{{product.name}}" class="w-100" >
+        <img src="{{product.pictureUrl}}"   loading="lazy" alt="{{product.name}}" class="w-100" >
+
+        
+        <!--        
+        <figure ng-style="{ background-image: url(product.pictureUrl) }">
+            <figcaption>
+                {{ product.name }}
+            </figcaption>
+        </figure> -->
     </div>
     <div class="col-6 mt-5">
 
         <h2> {{product.name}}</h2>
+        <p>{{product.pictureUrl}}</p>
         <p> {{product.price|currency}}</p>
         <div class="d-flex justify-content-start align-items-center">
             <i class="fa fa-minus-circle text-warning me-2" style=" cursor:pointer; font-size:2em;"> </i>

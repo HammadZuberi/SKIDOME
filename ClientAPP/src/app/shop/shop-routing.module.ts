@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 const routes :Routes =[
 
   // shop remove shop bcs it exits in the module itself
-  {path:'shop/:id' ,component:ProductDetailsComponent},
+  {path:':id' ,component:ProductDetailsComponent,data:{breadcrumb: {alias:'productDetails'}}},
   {path:'' ,component:ShopComponent}
 ];
 

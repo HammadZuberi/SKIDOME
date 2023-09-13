@@ -1,12 +1,12 @@
 <div class="container">
-  <div class="row">
+  <div class="row" *ngIf="types.length >0 && brands.length >0">
     <section class="col-3">
         <h5 class="text-warning ms-3">Sort</h5>
         <select class="form-select mb-4" (change)="onSortSelected($event)" >
             <option  *ngFor=" let sort of SortOptions"
             [value]="sort.value">{{sort.name}}</option>
         </select>
-
+        <br>
         <h5 class="text-warning ms-3">Brands </h5>
         <ul class="list-group  my-3">
         <li class="list-group-item" 
@@ -16,7 +16,7 @@
         (click)="onBrandSelected(brand.id)"
         >{{brand.name}}</li>
       </ul>
-    
+      <br>
       <h5 class="text-warning ms-3">Types </h5>
       <ul class="list-group my-3">
         <li class="list-group-item" *ngFor=" let type of types"
@@ -25,7 +25,7 @@
         (click)="onTypeSelected(type.id)">
         {{type.name}}</li>
     </ul>
-  
+    <br>
     </section>
     <section class="col-9">
         <div class="d-flex justify-content-between align-items center pb-2">
@@ -57,3 +57,4 @@
     </section>
   </div>
 </div>
+
