@@ -13,8 +13,12 @@
       <div class="d-flex align-items-center">
 
 
-        <a class="position-relative"> <i class="fa fa-shopping-cart fa-2x me-5 text-dark"></i> 
-      <div class="cart-no">   6</div>
+        <a routerLink="/basket" class="position-relative"> 
+          <i class="fa fa-shopping-cart fa-2x me-5 text-dark"></i> 
+      <div class="cart-no" *ngIf="(basketService.basketSource$ |async) as basket">
+        <!-- {{basket.items.length}}  for number of items   -->
+        {{getCount(basket.items)}}
+      </div>
     </a>
    
       <a href=""  class="btn btn-outline-secondary me-2"> Login</a>
