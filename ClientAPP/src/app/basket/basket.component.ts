@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BasketService } from './basket.service';
+import { BasketItems } from '../shared/Models/Basket';
 
 @Component({
   selector: 'app-basket',
@@ -9,6 +10,17 @@ import { BasketService } from './basket.service';
 export class BasketComponent {
 
   constructor(public basketService : BasketService ){
+
+  }
+
+  increamentItem(item:BasketItems){
+
+    this.basketService.addItemToBasket(item);
+
+  }
+
+  removeItem(id:number,quantity:number){
+    this.basketService.removeItemFromBasket(id,quantity);
 
   }
 

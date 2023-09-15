@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment.development';
 import { Basket, BasketItems, BasketTotal } from '../shared/Models/Basket';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../shared/Models/Product';
+import { NotExpr } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -55,16 +56,56 @@ basketTotalSource$ =this.basketTotalSource.asObservable();
     return this.basketSource.value;
   }
 
-  addItemToBasket(item:Product,quantity=1){
-
-    const itemToAdd = this.MapProductToBasketItem(item);
+  addItemToBasket(item:Product |BasketItems,quantity=1){
+    // const itemToAdd = this.MapProductToBasketItem(item);
+    if(this.isProduct(item)) item =this.MapProductToBasketItem(item);
+    
     //?? is null
     const basket= this.getCurrentBasketValue()?? this.createBasket();
-    basket.items= this.addOrUpdateItem(basket.items,itemToAdd,quantity);
+    basket.items= this.addOrUpdateItem(basket.items,item,quantity);
     this.setBasket(basket);
 
   }
 
+  removeItemFromBasket(id:number,quantity=1){
+    const basket = this.getCurrentBasketValue();
+    if(!basket) return null;
+
+    const item = basket.items.find(x=> x.id ===id);
+    if(item){
+      //remove 1 quantity
+      item.quantity -=quantity;
+      if(item.quantity===0){
+        //check the id given is not found in the remaining basket 
+        basket.items = basket.items.filter(x=> x.id !== id)
+
+      }
+      if(basket.items.length >0){
+        //update if it has something
+        this.setBasket(basket);
+
+      }
+      else
+      this.deleteBasket(basket);
+    
+    }
+    return basket;
+
+  }
+
+  deleteBasket(basket: Basket) {
+
+    return this.httpClient.delete(this.baseUrl +'basket?id='+basket.id).subscribe(
+
+      {//empty basket and it sources
+        next: ()=> {
+          this.basketSource.next(null);
+          this.basketTotalSource.next(null);
+          localStorage.removeItem('Basket_Id');
+        }
+      }
+    );
+  }
   private addOrUpdateItem(items: BasketItems[], itemToAdd: BasketItems, quantity: number): BasketItems[] {
   //  if  basket items matches the item to add product or create  new item count
     const item= items.find(x=> x.id === itemToAdd.id);
@@ -108,9 +149,17 @@ basketTotalSource$ =this.basketTotalSource.asObservable();
 
 
       const shippingPrice = 0;
-      const subTotal =basket.items.reduce((sum ,item)=> (item.price * item.quantity) * sum,0);
+
+      const subTotal =basket.items.reduce((sum ,item) => ((item.price * item.quantity) + sum) ,0);
+      // console.log(shippingPrice,subTotal);
       const total =subTotal + shippingPrice;
 
       return this.basketTotalSource.next({shippingPrice,subTotal,total});
+    }
+
+
+    private isProduct(item: Product |BasketItems) : item is Product{
+//using Type Guard
+      return ((item as Product).productBrand !== undefined);
     }
 }
