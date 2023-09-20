@@ -7,6 +7,8 @@ using Infrastructure.Data;
 using API.Errors;
 using Microsoft.EntityFrameworkCore;
 using Core.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Pipelines.Sockets.Unofficial.Arenas;
 
 namespace API.Controllers
 {
@@ -23,6 +25,14 @@ namespace API.Controllers
             this.iRep = iRep;
         }
 
+        [HttpGet("testauth")]
+        [Authorize]
+        public ActionResult<string> TestAuthSecretText()
+        {
+
+            return "Seacret Stuff returend";
+        }
+        
         [HttpGet("notFound")]
         public ActionResult GetnotFoundRequest()
         {
@@ -89,7 +99,7 @@ namespace API.Controllers
         {
 
             var products = await iRep.Products.ToListAsync();
-        products.OrderBy(p=> p.Price);
+            products.OrderBy(p => p.Price);
             return Ok(products);
         }
     }

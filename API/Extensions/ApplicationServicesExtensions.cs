@@ -8,6 +8,7 @@ using Core;
 using Core.Inerfaces;
 using Infrastructure;
 using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -28,8 +29,11 @@ namespace API.Extensions
 
             //extend the functionality by extension metonds
             Services.AddScoped<IProductRepository, ProductRepository>();
-
             Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            Services.AddScoped<IBasketRepository, BasketRepository>();
+            Services.AddScoped<ITokenService, TokenService>();
+
+            //service IOC
 
             Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             Services.AddDbContext<StoreContext>(opt =>
@@ -42,8 +46,7 @@ namespace API.Extensions
                 var option = ConfigurationOptions.Parse(config.GetConnectionString("Redis"));
                 return ConnectionMultiplexer.Connect(option);
             });
-            
-            Services.AddScoped<IBasketRepository,BasketRepository>();
+
             // for overridding the normal behavior of the validation error by api controller pass the clubed error 
             Services.Configure<ApiBehaviorOptions>(option =>
             {
