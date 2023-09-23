@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.DTOs;
 using AutoMapper;
 using Core.Entities;
+using Core.Entities.Identity;
 
 namespace API.Helpers
 {
@@ -20,6 +21,12 @@ namespace API.Helpers
             .ForMember(d => d.ProductBrand, o => o.MapFrom(s => s.ProductBrand.Name))
             .ForMember(d => d.PictureUrl, o => o.MapFrom<ProductUrlResolver>());
 
+            //for update and get activate reverse map
+            // CreateMap<Address, AddressDto>();
+            CreateMap<Address, AddressDto>().ReverseMap();
+
+            CreateMap<CustomerBasket,CustomerBasketDto>();
+            CreateMap<BasketItems,BasketItemDto>();
         }
     }
 }

@@ -24,6 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 
+builder.Services.AddSwaggerDocument();
 
 // builder.Services.adddbcontext
 var app = builder.Build();
@@ -34,8 +35,7 @@ app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerDocument();
 }
 //to serve images
 app.UseStaticFiles();

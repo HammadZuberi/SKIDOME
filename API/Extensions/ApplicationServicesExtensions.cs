@@ -23,9 +23,6 @@ namespace API.Extensions
             // cntl +shift+l select all word
 
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            Services.AddEndpointsApiExplorer();
-            Services.AddSwaggerGen();
 
             //extend the functionality by extension metonds
             Services.AddScoped<IProductRepository, ProductRepository>();
