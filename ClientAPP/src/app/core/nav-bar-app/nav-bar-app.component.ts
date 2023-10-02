@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AccountService } from 'src/app/account/account.service';
 import { BasketService } from 'src/app/basket/basket.service';
 import { Basket, BasketItems } from 'src/app/shared/Models/Basket';
 
@@ -9,7 +10,7 @@ import { Basket, BasketItems } from 'src/app/shared/Models/Basket';
 })
 export class NavBarAppComponent {
 
-  constructor(public basketService:BasketService){
+  constructor(public basketService:BasketService,public accountService:AccountService){
     
   }
   getCount(items :BasketItems[]){
