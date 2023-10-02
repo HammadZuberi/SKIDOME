@@ -13,4 +13,9 @@
         class="invalid-feedback">
         Please choose a correct email ID
     </div>
+    <div *ngIf="control.errors?.['pattern']"
+    class="invalid-feedback">
+    Please choose a complex password with 
+    <ul><li> 8-16 characters</li><li>1 Upper case</li><li>1 Lower case</li><li>1 digit</li><li>1 special charachter</li></ul>
+</div>
 </div>
