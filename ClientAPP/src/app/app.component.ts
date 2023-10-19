@@ -27,7 +27,8 @@ this.loadCurrentUser();
 
   loadCurrentUser(){
     const tokenId =localStorage.getItem('token') ;
-    if(tokenId)    this.accountService.loadCurrentUser(tokenId).subscribe();
+    // if(tokenId)    this.accountService.loadCurrentUser(tokenId).subscribe();
+    this.accountService.loadCurrentUser(tokenId).subscribe();
 
   }
 
