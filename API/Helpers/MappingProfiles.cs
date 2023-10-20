@@ -27,6 +27,8 @@ namespace API.Helpers
 
             CreateMap<CustomerBasketDto, CustomerBasket>();
             CreateMap<BasketItemDto, BasketItems>();
+//for address
+            CreateMap<AddressDto,Core.Entities.OrderAggregate.Address>();
         }
     }
 }

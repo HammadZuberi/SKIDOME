@@ -1,6 +1,6 @@
 namespace Core.Entities.OrderAggregate
 {
-    public class DileveryMethod :BaseEntity
+    public class DeliveryMethod :BaseEntity
     {
         public string ShortName { get; set; }
         public string DiliveryTime { get; set; }
