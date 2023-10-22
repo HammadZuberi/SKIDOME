@@ -9,6 +9,7 @@ using API.Extensions;
 using AutoMapper;
 using Core.Entities.OrderAggregate;
 using Core.Inerfaces;
+using Infrastructure.Data.Config;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,5 +43,48 @@ namespace API.Controllers
             return Ok(order);
         }
 
+
+
+        [HttpGet]
+        public async Task<ActionResult<IReadOnlyList<Order>>> GetOrdersForUser()
+        {
+            var email = HttpContext.User.RetrieveEmailFromPrincipal();
+
+            var order = await _orderService.GetOrdersForUsers(email);
+
+            if (order == null)
+                return BadRequest(new ApiResponse(400, "Problem showing the orders"));
+
+            return Ok(order);
+        }
+
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Order>> GetOrdersForUser(int id)
+        {
+            var email = HttpContext.User.RetrieveEmailFromPrincipal();
+
+            var order = await _orderService.GetOrdersByIdAsync(id, email);
+
+            if (order == null)
+                return NotFound(new ApiResponse(404, "Problem showing the orders"));
+
+            return Ok(order);
+        }
+
+
+        [HttpGet("deliveryMethod")]
+        public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetDeliveryMethod()
+        {
+            // var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var deliveryMethod = _orderService.GetDileveryMethodsAsync();
+
+
+            if (deliveryMethod == null)
+                return NotFound(new ApiResponse(404));
+
+            return Ok(await deliveryMethod);
+        }
     }
 }

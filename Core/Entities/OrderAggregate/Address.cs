@@ -4,20 +4,20 @@ namespace Core.Entities.OrderAggregate
 
 
     {
-//for entity framework empty 
+        //for entity framework empty 
         public Address()
         {
 
         }
 
         //order ows int and resides in the same table
-        public Address(string firstName, string street, string state, string zipCode)
+        public Address(string firstName, string street, string state, string city, string zipCode)
         {
             this.FirstName = firstName;
             this.Street = street;
             this.State = state;
             this.ZipCode = zipCode;
-
+            this.City = city;
         }
         public string FirstName { get; set; }
         public string LastName { get; set; }

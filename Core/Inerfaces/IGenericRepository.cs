@@ -14,5 +14,11 @@ namespace Core.Inerfaces
 
 
         Task<int> GetCount(ISpecification<T> specs);
+
+        //adding Tracking to the repository to track enity not to save or change in db
+
+        void Add(T enity);
+        void Delete(T enity);
+        void Update(T enity);
     }
 }

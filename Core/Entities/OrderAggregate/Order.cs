@@ -9,10 +9,10 @@ namespace Core.Entities.OrderAggregate
             
         }
         public Order(IReadOnlyList<OrderItem> OrderItems,
-        string email, Address shippToAddress, DeliveryMethod deliveryMethod, decimal subtotal)
+        string email, Address shipToAddress, DeliveryMethod deliveryMethod, decimal subtotal)
         {
             this.BuyerEmail = email;
-            this.ShippToAddress = shippToAddress;
+            this.ShipToAddress = shipToAddress;
             this.DeliveryMethod = deliveryMethod;
             this.Subtotal = subtotal;
             this.OrderItems=OrderItems;
@@ -21,7 +21,7 @@ namespace Core.Entities.OrderAggregate
         public string BuyerEmail { get; set; }
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
-        public Address ShippToAddress { get; set; }
+        public Address ShipToAddress { get; set; }
 
         public IReadOnlyList<OrderItem> OrderItems { get; set; }
 

@@ -8,12 +8,12 @@ namespace Infrastructure.Data.Config
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.OwnsOne(a => a.ShippToAddress, o =>
+            builder.OwnsOne(a => a.ShipToAddress, o =>
             {
                 o.WithOwner();
 
             });
-            builder.Navigation(o => o.ShippToAddress).IsRequired();
+            builder.Navigation(o => o.ShipToAddress).IsRequired();
             builder.Property(s => s.Status).HasConversion(
                 o => o.ToString(),
                 o => (OrderStatus)Enum.Parse(typeof(OrderStatus), o)

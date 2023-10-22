@@ -30,6 +30,7 @@ namespace API.Extensions
             Services.AddScoped<IBasketRepository, BasketRepository>();
             Services.AddScoped<ITokenService, TokenService>();
             Services.AddScoped<IOrderService,OrderService>();
+            Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
             //service IOC
 
