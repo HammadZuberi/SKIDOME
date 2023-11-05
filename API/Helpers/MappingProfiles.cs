@@ -6,6 +6,7 @@ using API.DTOs;
 using AutoMapper;
 using Core.Entities;
 using Core.Entities.Identity;
+using Core.Entities.OrderAggregate;
 
 namespace API.Helpers
 {
@@ -23,12 +24,24 @@ namespace API.Helpers
 
             //for update and get activate reverse map
             // CreateMap<Address, AddressDto>();
-            CreateMap<Address, AddressDto>().ReverseMap();
+            CreateMap<Core.Entities.Identity.Address, AddressDto>().ReverseMap();
 
             CreateMap<CustomerBasketDto, CustomerBasket>();
             CreateMap<BasketItemDto, BasketItems>();
-//for address
-            CreateMap<AddressDto,Core.Entities.OrderAggregate.Address>();
+            //for address
+            CreateMap<AddressDto, Core.Entities.OrderAggregate.Address>();
+
+            CreateMap<Order, OrderToReturnDTO>()
+            .ForMember(d => d.DeliveryMethod, o => o.MapFrom(s => s.DeliveryMethod.ShortName))
+            .ForMember(d => d.ShipingPrice, o => o.MapFrom(s => s.DeliveryMethod.Price));
+            CreateMap<OrderItem, OrderItemDto>()
+            .ForMember(p => p.ProductId, o => o.MapFrom(s => s.ItemOrdered.Id))
+            .ForMember(p => p.ProductName, o => o.MapFrom(s => s.ItemOrdered.ProductName))
+            .ForMember(p => p.PictureUrl, o => o.MapFrom(s => s.ItemOrdered.PictureUrl))
+            .ForMember(p => p.PictureUrl, o => o.MapFrom<OrderItemUrlResolver>()) //for url add server url
+            ;
+
+
         }
     }
 }

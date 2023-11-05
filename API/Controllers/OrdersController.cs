@@ -1,28 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using API.DTOs;
 using API.Errors;
 using API.Extensions;
 using AutoMapper;
 using Core.Entities.OrderAggregate;
 using Core.Inerfaces;
-using Infrastructure.Data.Config;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [Authorize]
-    public class OrderController : BaseApiController
+    public class OrdersController : BaseApiController
     {
         private readonly IOrderService _orderService;
 
         private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderService, IMapper mapper)
+        public OrdersController(IOrderService orderService, IMapper mapper)
         {
             _mapper = mapper;
             _orderService = orderService;
@@ -46,7 +40,7 @@ namespace API.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Order>>> GetOrdersForUser()
+        public async Task<ActionResult<IReadOnlyList<OrderToReturnDTO>>> GetOrdersForUser()
         {
             var email = HttpContext.User.RetrieveEmailFromPrincipal();
 
@@ -55,13 +49,14 @@ namespace API.Controllers
             if (order == null)
                 return BadRequest(new ApiResponse(400, "Problem showing the orders"));
 
-            return Ok(order);
+
+            return Ok(_mapper.Map<IReadOnlyList<OrderToReturnDTO>>(order));
         }
 
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrdersForUser(int id)
+        public async Task<ActionResult<OrderToReturnDTO>> GetOrdersForUser(int id)
         {
             var email = HttpContext.User.RetrieveEmailFromPrincipal();
 
@@ -70,11 +65,11 @@ namespace API.Controllers
             if (order == null)
                 return NotFound(new ApiResponse(404, "Problem showing the orders"));
 
-            return Ok(order);
+            return Ok(_mapper.Map<OrderToReturnDTO>(order));
         }
 
 
-        [HttpGet("deliveryMethod")]
+        [HttpGet("deliveryMethods")]
         public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetDeliveryMethod()
         {
             // var email = HttpContext.User.RetrieveEmailFromPrincipal();
