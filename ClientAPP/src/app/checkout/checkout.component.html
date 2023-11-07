@@ -5,10 +5,10 @@
             <div class="col-8">
                 <app-stepper [linerModeSelected]="false" #appStepper>
                     <cdk-step [label]="'Address'">
-                        <app-checkout-address></app-checkout-address>
+                        <app-checkout-address [checkoutForm]="checkoutForm"></app-checkout-address>
                     </cdk-step>
                     <cdk-step [label]="'Dilevery'">
-                        <app-checkout-dilevery></app-checkout-dilevery>
+                        <app-checkout-dilevery [checkoutForm]="checkoutForm"></app-checkout-dilevery>
                     </cdk-step>
                     <cdk-step [label]="'Review'">
                         <app-checkout-review></app-checkout-review>
