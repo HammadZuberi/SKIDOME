@@ -3,7 +3,7 @@
     <li class="nav-item" *ngFor="let step of steps; let i = index">
       <div class="d-grid">
         <button class="nav-link py-3 text-uppercase fw-bold" (click)="OnClick(i)"
-        [class.active]="selectedIndex ===i">{{step.label}} </button>
+        [class.active]="selectedIndex ===i">{{step.label}} :{{step.completed}} </button>
       </div>
     </li>
   </ul>
