@@ -9,8 +9,9 @@ exports.__esModule = true;
 exports.CheckoutDileveryComponent = void 0;
 var core_1 = require("@angular/core");
 var CheckoutDileveryComponent = /** @class */ (function () {
-    function CheckoutDileveryComponent(checkoutservice) {
+    function CheckoutDileveryComponent(checkoutservice, basketService) {
         this.checkoutservice = checkoutservice;
+        this.basketService = basketService;
         this.deliveryMethods = [];
     }
     CheckoutDileveryComponent.prototype.ngOnInit = function () {
@@ -18,6 +19,9 @@ var CheckoutDileveryComponent = /** @class */ (function () {
         this.checkoutservice.getDeliveryMethod().subscribe({
             next: function (dm) { return (_this.deliveryMethods = dm); }
         });
+    };
+    CheckoutDileveryComponent.prototype.setShippingPrice = function (deliveryMethod) {
+        this.basketService.setShipingPrice(deliveryMethod);
     };
     __decorate([
         core_1.Input()
