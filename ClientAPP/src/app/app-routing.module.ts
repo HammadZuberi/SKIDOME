@@ -33,8 +33,19 @@ const routes: Routes = [
     path: 'account',
     loadChildren: () =>
       import('./account/account.module').then((m) => m.AccountModule),
+  }, {
+    path: 'orders',canActivate: [authGuard],
+    loadChildren: () =>
+      import('./order/order.module').then((m) => m.OrderModule), data: { breadcrumb: 'Order' },
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
+  {
+    path: 'order',
+    // canActivate: [authGuard],
+    loadChildren: () =>
+      import('./order/order.module').then((o) => o.OrderModule),
+    data: { breadcrumb: 'Order' },
+  },
 ];
 
 @NgModule({
