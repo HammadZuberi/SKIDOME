@@ -50,6 +50,7 @@ namespace Infrastructure.Services
 
                     item.Price = productItem.Price;
                 }
+            }
                 var service = new PaymentIntentService();
                 PaymentIntent intent;
 
@@ -83,7 +84,7 @@ namespace Infrastructure.Services
 //cahnge the basket payment and items
                 await _basketRepo.UpdateCustomerBasket(basket);
                 return basket;
-            }
+           
         }
     }
 }
