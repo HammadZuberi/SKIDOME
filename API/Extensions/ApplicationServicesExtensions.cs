@@ -31,6 +31,7 @@ namespace API.Extensions
             Services.AddScoped<ITokenService, TokenService>();
             Services.AddScoped<IOrderService,OrderService>();
             Services.AddScoped<IUnitOfWork,UnitOfWork>();
+            Services.AddScoped<IPaymentService, PaymentService>();
 
             //service IOC
 
