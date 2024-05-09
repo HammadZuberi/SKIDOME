@@ -25,8 +25,13 @@ var BasketService = /** @class */ (function () {
         this.shipingPrice = 0;
     }
     BasketService.prototype.setShipingPrice = function (deliveryMethod) {
+        var basket = this.getCurrentBasketValue();
         this.shipingPrice = deliveryMethod.price;
-        this.calculateTotal();
+        if (basket) {
+            basket.deliveryMethodId = deliveryMethod.id;
+            this.setBasket(basket);
+        }
+        // this.calculateTotal(); in the set basket
     };
     BasketService.prototype.getBasket = function (id) {
         var _this = this;

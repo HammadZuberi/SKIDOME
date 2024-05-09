@@ -28,8 +28,14 @@ export class BasketService {
   constructor(private httpClient: HttpClient) {}
 
   setShipingPrice(deliveryMethod: DeliveryMethod) {
+    const basket = this.getCurrentBasketValue();
     this.shipingPrice = deliveryMethod.price;
-    this.calculateTotal();
+
+    if(basket){
+      basket.deliveryMethodId =deliveryMethod.id;
+      this.setBasket(basket);
+    }
+    // this.calculateTotal(); in the set basket
   }
 
   getBasket(id: string) {
