@@ -4,8 +4,9 @@ export interface Basket {
   id: string;
   items: BasketItems[];
   clientSecret?: string;
-  paymentIntentId: string;
-  deliveryMethodId: number;
+  paymentIntentId?: string;
+  deliveryMethodId?: number;
+  shippingPrice:number;
 }
   
   export interface BasketItems {
@@ -20,10 +21,10 @@ export interface Basket {
 
   //create a class to generate id
 
-  export class Basket implements Basket{
-    id=cuid();
-    items: BasketItems[]=[];
-
+  export class Basket implements Basket {
+    id = cuid();
+    items: BasketItems[] = [];
+    shippingPrice = 0;
   }
   
   export interface BasketTotal{

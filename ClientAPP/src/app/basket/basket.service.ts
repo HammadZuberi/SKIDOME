@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject ,map} from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 import { Basket, BasketItems, BasketTotal } from '../shared/Models/Basket';
 import { HttpClient } from '@angular/common/http';
@@ -29,15 +29,30 @@ export class BasketService {
 
   setShipingPrice(deliveryMethod: DeliveryMethod) {
     const basket = this.getCurrentBasketValue();
-    this.shipingPrice = deliveryMethod.price;
+    // this.shipingPrice = deliveryMethod.price;
 
     if(basket){
+      basket.shippingPrice = deliveryMethod.price;
       basket.deliveryMethodId =deliveryMethod.id;
+      //setting on Redis
       this.setBasket(basket);
     }
     // this.calculateTotal(); in the set basket
   }
 
+  createPaymentIntent(){
+    return this.httpClient
+      .post<Basket>(
+        this.baseUrl + 'payments/' + this.getCurrentBasketValue()?.id,
+        {}
+      )
+      .pipe(
+        map((basket) => {
+          this.basketSource.next(basket);
+          console.log(basket);
+        })
+      );
+  }
   getBasket(id: string) {
     return this.httpClient
       .get<Basket>(this.baseUrl + 'basket?id=' + id)
@@ -161,10 +176,10 @@ export class BasketService {
 
     // console.log(shippingPrice,subTotal);
     //refers to the class property
-    const total = subTotal + this.shipingPrice;
+    const total = subTotal + basket.shippingPrice;
 
     return this.basketTotalSource.next({
-      shippingPrice: this.shipingPrice,
+      shippingPrice: basket.shippingPrice,
       subTotal,
       total,
     });

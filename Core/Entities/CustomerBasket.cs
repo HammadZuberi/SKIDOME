@@ -19,6 +19,8 @@ namespace Core.Entities
         public int? DileveryMethodId { get; set; }
         public string? ClientSecret { get; set; }
         public string? PaymentIntenetId { get; set; }
+        
+        public decimal ShippingPrice { get; set; }
     }
 
 }

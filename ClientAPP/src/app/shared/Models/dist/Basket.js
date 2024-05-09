@@ -7,6 +7,7 @@ var Basket = /** @class */ (function () {
     function Basket() {
         this.id = cuid();
         this.items = [];
+        this.shippingPrice = 0;
     }
     return Basket;
 }());

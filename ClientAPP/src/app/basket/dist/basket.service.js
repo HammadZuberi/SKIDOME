@@ -26,12 +26,24 @@ var BasketService = /** @class */ (function () {
     }
     BasketService.prototype.setShipingPrice = function (deliveryMethod) {
         var basket = this.getCurrentBasketValue();
-        this.shipingPrice = deliveryMethod.price;
+        // this.shipingPrice = deliveryMethod.price;
         if (basket) {
+            basket.shippingPrice = deliveryMethod.price;
             basket.deliveryMethodId = deliveryMethod.id;
+            //setting on Redis
             this.setBasket(basket);
         }
         // this.calculateTotal(); in the set basket
+    };
+    BasketService.prototype.createPaymentIntent = function () {
+        var _this = this;
+        var _a;
+        return this.httpClient
+            .post(this.baseUrl + 'payments/' + ((_a = this.getCurrentBasketValue()) === null || _a === void 0 ? void 0 : _a.id), {})
+            .pipe(rxjs_1.map(function (basket) {
+            _this.basketSource.next(basket);
+            console.log(basket);
+        }));
     };
     BasketService.prototype.getBasket = function (id) {
         var _this = this;
@@ -146,9 +158,9 @@ var BasketService = /** @class */ (function () {
         var subTotal = basket.items.reduce(function (sum, item) { return item.price * item.quantity + sum; }, 0);
         // console.log(shippingPrice,subTotal);
         //refers to the class property
-        var total = subTotal + this.shipingPrice;
+        var total = subTotal + basket.shippingPrice;
         return this.basketTotalSource.next({
-            shippingPrice: this.shipingPrice,
+            shippingPrice: basket.shippingPrice,
             subTotal: subTotal,
             total: total
         });
