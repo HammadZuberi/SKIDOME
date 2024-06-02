@@ -36,6 +36,7 @@
     <i class="fa fa-angle-left">PREV</i>
   </button>
   <button class="btn btn-outline-primary" (click)="submitOrder()">
-    <i class="fa fa-angle-right">Submit Order</i>
+    Submit Order    <i class="fa fa-angle-right"></i> 
+    <i *ngIf="loading" class="fa fa-spinner fs-spin"></i>
   </button>
 </div>

@@ -43,30 +43,45 @@ namespace Infrastructure.Services
             }
             // GetDilevery Methods from repo
             var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().getbyIdAsync(deliveryMethodId);
+
             // calculate sub total 
-
             var subTotal = items.Sum(item => item.Price * item.Quantity);
+            //check to see if order exist
+            var specs = new OrderByPaymentIntenIdSpecification(basket.PaymentIntenetId);
 
-            //create order
-            var Order = new Order(items, buyersEmail, shippingAddress, deliveryMethod, subTotal);
+            var order = await _unitOfWork.Repository<Order>().GetEntityWithSpecification(specs);
+            //if user change thier order 
+            if (order != null)
+            {
 
-            _unitOfWork.Repository<Order>().Add(Order);
+                order.ShipToAddress = shippingAddress;
+                order.Subtotal = subTotal;
+                order.DeliveryMethod = deliveryMethod;
+
+                _unitOfWork.Repository<Order>().Update(order);
+            }
+            else
+            {    //create order
+                order = new Order(items, buyersEmail, shippingAddress, deliveryMethod, subTotal, basket.PaymentIntenetId);
+
+                _unitOfWork.Repository<Order>().Add(order);
+            }
             //save order 
             var result = await _unitOfWork.Complete();
 
             if (result <= 0) return null;
 
-            //delete basket after sucessful order 
-            await _basketRepo.DeleteCustomerBasket(basketId);
+            //delete basket after sucessful order and payment 
+            // await _basketRepo.DeleteCustomerBasket(basketId);
 
             //return order
 
-            return Order;
+            return order;
         }
 
         public async Task<IReadOnlyList<DeliveryMethod>> GetDileveryMethodsAsync()
         {
-            
+
             return await _unitOfWork.Repository<DeliveryMethod>().getListAllAsync();
         }
 

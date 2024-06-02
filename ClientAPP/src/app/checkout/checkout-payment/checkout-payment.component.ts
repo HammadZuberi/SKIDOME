@@ -13,6 +13,8 @@ import {
   StripeCardNumberElement,
   loadStripe,
 } from '@stripe/stripe-js';
+import { firstValueFrom } from 'rxjs';
+import { OrdertoCreate } from 'src/app/shared/Models/order';
 
 @Component({
   selector: 'app-checkout-payment',
@@ -30,6 +32,7 @@ export class CheckoutPaymentComponent implements OnInit {
   cardCvc?: StripeCardCvcElement;
   cardNumber?: StripeCardNumberElement;
   cardErrors: any;
+  loading = false;
 
   constructor(
     private basketService: BasketService,
@@ -40,59 +43,92 @@ export class CheckoutPaymentComponent implements OnInit {
 
   //laod stripe
   ngOnInit(): void {
-//publish key
-    loadStripe('pk_test_51OcIyAChqXGeDg7By9DTylUDHQ6SPzHpooYhKvla015yKHqzfwSPxzE7g0vln19pmWDZLHFiQL87W4sRxx1qdWk300N6ngbhte').then(stripe=> {
-      this.stripe =stripe;
-      const elements = stripe?. elements();
-      if(elements){
+    //publish key
+    loadStripe(
+      'pk_test_51OcIyAChqXGeDg7By9DTylUDHQ6SPzHpooYhKvla015yKHqzfwSPxzE7g0vln19pmWDZLHFiQL87W4sRxx1qdWk300N6ngbhte'
+    ).then((stripe) => {
+      this.stripe = stripe;
+      const elements = stripe?.elements();
+      if (elements) {
         this.cardNumber = elements.create('cardNumber');
         this.cardNumber.mount(this.cardNumberElement?.nativeElement);
-        this.cardNumber.on('change',event=>{
-          if(event.error) this.cardErrors = event.error.message;
-          else this.cardErrors= null;
+        this.cardNumber.on('change', (event) => {
+          if (event.error) this.cardErrors = event.error.message;
+          else this.cardErrors = null;
         });
 
-        
         this.cardExpiry = elements.create('cardExpiry');
-        this.cardExpiry.mount(this.cardExpiryElement?.nativeElement); 
-        this.cardExpiry.on('change',event=>{
-          if(event.error) this.cardErrors = event.error.message;
-          else this.cardErrors= null;
+        this.cardExpiry.mount(this.cardExpiryElement?.nativeElement);
+        this.cardExpiry.on('change', (event) => {
+          if (event.error) this.cardErrors = event.error.message;
+          else this.cardErrors = null;
         });
-        
+
         this.cardCvc = elements.create('cardCvc');
-        this.cardCvc.mount(this.cardCvcElement?.nativeElement); 
-        this.cardCvc.on('change',event=>{
-          if(event.error) this.cardErrors = event.error.message;
-          else this.cardErrors= null;
+        this.cardCvc.mount(this.cardCvcElement?.nativeElement);
+        this.cardCvc.on('change', (event) => {
+          if (event.error) this.cardErrors = event.error.message;
+          else this.cardErrors = null;
         });
       }
     });
   }
 
-  submitOrder() {
+  async submitOrder() {
+    this.loading = true;
     const basket = this.basketService.getCurrentBasketValue();
-    if (!basket) return;
 
-    const OrdertoCreate = this.getOrderToCreate(basket);
+    try {
+      const createOrder = await this.createOrder(basket);
+      const paymentResult = await this.confirmPaymentStripe(basket);
 
-    if (!OrdertoCreate) return;
-
-    this.checkoutService.CreateOrder(OrdertoCreate).subscribe({
-      next: (order) => {
-        this.toastr.success('ORder created successfully');
-
+      if (paymentResult.paymentIntent) {
         this.basketService.deleteLocalBasket();
         //delete form local storage application storage,
-
-        console.log(order);
-        const NavigationExtras: NavigationExtras = { state: order };
+        console.log(createOrder);
+        const NavigationExtras: NavigationExtras = { state: createOrder };
         this.router.navigate(['checkout/success'], NavigationExtras);
-      },
-    });
+      } else {
+        this.toastr.error(paymentResult.error.message);
+      }
+    } catch (error: any) {
+      console.log(error);
+      this.toastr.error(error.message);
+    } finally {
+      this.loading = false;
+    }
   }
 
-  private getOrderToCreate(basket: Basket) {
+
+  private async confirmPaymentStripe(basket: Basket | null) {
+    if (!basket) throw new Error('Basket is null');
+
+    const resultStripe = this.stripe?.confirmCardPayment(basket.clientSecret!, {
+      payment_method: {
+        card: this.cardNumber!,
+        billing_details: {
+          name: this.checkoutForm?.get('paymentForm')?.get('nameOnCard')?.value,
+        },
+      },
+    });
+
+    if (!resultStripe)
+      throw new Error('problem attempting Payment with Stripe');
+
+    this.toastr.success('Order created successfully');
+    return resultStripe;
+  }
+
+
+  //garantee to return promise
+  private async createOrder(basket: Basket | null) {
+    if (!basket) throw new Error('Basket is null');
+    const ordertoCreate = this.getOrderToCreate(basket);
+
+    return firstValueFrom(this.checkoutService.CreateOrder(ordertoCreate));
+  }
+ 
+  private getOrderToCreate(basket: Basket): OrdertoCreate {
     const DeliveryMethodId = this.checkoutForm
       ?.get('deliveryForm')
       ?.get('deliveryMethod')?.value;
@@ -100,7 +136,8 @@ export class CheckoutPaymentComponent implements OnInit {
     const ShipToAddress = this.checkoutForm?.get('addressForm')
       ?.value as Address;
 
-    if (!DeliveryMethodId || !ShipToAddress) return;
+    if (!DeliveryMethodId || !ShipToAddress)
+      throw new Error('Problem with Basket');
 
     return {
       basketId: basket.id,
@@ -109,3 +146,37 @@ export class CheckoutPaymentComponent implements OnInit {
     };
   }
 }
+
+// if (!basket) return;
+// const OrdertoCreate = this.getOrderToCreate(basket);
+// if (!OrdertoCreate) return;
+
+// create a promise instead of subcribing and creating /holding an observable.
+
+// this.checkoutService.CreateOrder(OrdertoCreate).subscribe({
+//   next: (order) => {
+//     this.toastr.success('ORder created successfully');
+//     this.stripe
+//       ?.confirmCardPayment(basket.clientSecret!, {
+//         payment_method: {
+//           card: this.cardNumber!,
+//           billing_details: {
+//             name: this.checkoutForm?.get('paymentForm')?.get('nameOnCard')
+//               ?.value,
+//           },
+//         },
+//       })
+//       .then((result) => {
+//         console.log(result);
+//         if (result.paymentIntent) {
+//           this.basketService.deleteLocalBasket();
+//           //delete form local storage application storage,
+//           console.log(order);
+//           const NavigationExtras: NavigationExtras = { state: order };
+//           this.router.navigate(['checkout/success'], NavigationExtras);
+//         } else {
+//           this.toastr.error(result.error.message);
+//         }
+//       });
+//   },
+// });

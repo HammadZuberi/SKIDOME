@@ -16,10 +16,17 @@ var CheckoutReviewComponent = /** @class */ (function () {
     CheckoutReviewComponent.prototype.createPaymentIntent = function () {
         var _this = this;
         this.basketService.createPaymentIntent().subscribe({
-            next: function () { return _this.toastr.success('Payment intent created'); },
+            next: function () {
+                var _a;
+                _this.toastr.success('Payment intent created');
+                (_a = _this.appStepper) === null || _a === void 0 ? void 0 : _a.next();
+            },
             error: function (err) { return _this.toastr.error(err.message); }
         });
     };
+    __decorate([
+        core_1.Input()
+    ], CheckoutReviewComponent.prototype, "appStepper");
     CheckoutReviewComponent = __decorate([
         core_1.Component({
             selector: 'app-checkout-review',
