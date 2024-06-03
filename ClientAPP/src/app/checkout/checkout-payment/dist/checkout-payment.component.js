@@ -54,6 +54,9 @@ var CheckoutPaymentComponent = /** @class */ (function () {
         this.router = router;
         this.stripe = null;
         this.loading = false;
+        this.cardExpiryComplte = false;
+        this.cardNumberComplte = false;
+        this.cardCvcComplte = false;
     }
     //laod stripe
     CheckoutPaymentComponent.prototype.ngOnInit = function () {
@@ -67,6 +70,7 @@ var CheckoutPaymentComponent = /** @class */ (function () {
                 _this.cardNumber = elements.create('cardNumber');
                 _this.cardNumber.mount((_a = _this.cardNumberElement) === null || _a === void 0 ? void 0 : _a.nativeElement);
                 _this.cardNumber.on('change', function (event) {
+                    _this.cardNumberComplte = event.complete;
                     if (event.error)
                         _this.cardErrors = event.error.message;
                     else
@@ -75,14 +79,18 @@ var CheckoutPaymentComponent = /** @class */ (function () {
                 _this.cardExpiry = elements.create('cardExpiry');
                 _this.cardExpiry.mount((_b = _this.cardExpiryElement) === null || _b === void 0 ? void 0 : _b.nativeElement);
                 _this.cardExpiry.on('change', function (event) {
-                    if (event.error)
+                    _this.cardExpiryComplte = event.complete;
+                    if (event.error) {
                         _this.cardErrors = event.error.message;
+                        console.log(event.error.message);
+                    }
                     else
                         _this.cardErrors = null;
                 });
                 _this.cardCvc = elements.create('cardCvc');
                 _this.cardCvc.mount((_c = _this.cardCvcElement) === null || _c === void 0 ? void 0 : _c.nativeElement);
                 _this.cardCvc.on('change', function (event) {
+                    _this.cardCvcComplte = event.complete;
                     if (event.error)
                         _this.cardErrors = event.error.message;
                     else
@@ -91,6 +99,17 @@ var CheckoutPaymentComponent = /** @class */ (function () {
             }
         });
     };
+    Object.defineProperty(CheckoutPaymentComponent.prototype, "PaymentFormComplete", {
+        get: function () {
+            var _a, _b;
+            return (((_b = (_a = this.checkoutForm) === null || _a === void 0 ? void 0 : _a.get('paymentForm')) === null || _b === void 0 ? void 0 : _b.valid) &&
+                this.cardCvcComplte &&
+                this.cardExpiryComplte &&
+                this.cardNumberComplte);
+        },
+        enumerable: false,
+        configurable: true
+    });
     CheckoutPaymentComponent.prototype.submitOrder = function () {
         return __awaiter(this, void 0, void 0, function () {
             var basket, createOrder, paymentResult, NavigationExtras, error_1;

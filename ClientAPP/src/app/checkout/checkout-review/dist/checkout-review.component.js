@@ -17,8 +17,8 @@ var CheckoutReviewComponent = /** @class */ (function () {
         var _this = this;
         this.basketService.createPaymentIntent().subscribe({
             next: function () {
+                // this.toastr.success('Payment intent created');
                 var _a;
-                _this.toastr.success('Payment intent created');
                 (_a = _this.appStepper) === null || _a === void 0 ? void 0 : _a.next();
             },
             error: function (err) { return _this.toastr.error(err.message); }

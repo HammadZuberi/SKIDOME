@@ -33,6 +33,9 @@ export class CheckoutPaymentComponent implements OnInit {
   cardNumber?: StripeCardNumberElement;
   cardErrors: any;
   loading = false;
+  cardExpiryComplte = false;
+  cardNumberComplte = false;
+  cardCvcComplte = false;
 
   constructor(
     private basketService: BasketService,
@@ -53,6 +56,7 @@ export class CheckoutPaymentComponent implements OnInit {
         this.cardNumber = elements.create('cardNumber');
         this.cardNumber.mount(this.cardNumberElement?.nativeElement);
         this.cardNumber.on('change', (event) => {
+          this.cardNumberComplte = event.complete;
           if (event.error) this.cardErrors = event.error.message;
           else this.cardErrors = null;
         });
@@ -60,13 +64,15 @@ export class CheckoutPaymentComponent implements OnInit {
         this.cardExpiry = elements.create('cardExpiry');
         this.cardExpiry.mount(this.cardExpiryElement?.nativeElement);
         this.cardExpiry.on('change', (event) => {
-          if (event.error) this.cardErrors = event.error.message;
+          this.cardExpiryComplte = event.complete;
+          if (event.error) {this.cardErrors = event.error.message; console.log(event.error.message);}
           else this.cardErrors = null;
         });
 
         this.cardCvc = elements.create('cardCvc');
         this.cardCvc.mount(this.cardCvcElement?.nativeElement);
         this.cardCvc.on('change', (event) => {
+          this.cardCvcComplte = event.complete;
           if (event.error) this.cardErrors = event.error.message;
           else this.cardErrors = null;
         });
@@ -74,6 +80,14 @@ export class CheckoutPaymentComponent implements OnInit {
     });
   }
 
+  get PaymentFormComplete() {
+    return (
+      this.checkoutForm?.get('paymentForm')?.valid &&
+      this.cardCvcComplte &&
+      this.cardExpiryComplte &&
+      this.cardNumberComplte
+    );
+  }
   async submitOrder() {
     this.loading = true;
     const basket = this.basketService.getCurrentBasketValue();
@@ -99,7 +113,6 @@ export class CheckoutPaymentComponent implements OnInit {
     }
   }
 
-
   private async confirmPaymentStripe(basket: Basket | null) {
     if (!basket) throw new Error('Basket is null');
 
@@ -119,7 +132,6 @@ export class CheckoutPaymentComponent implements OnInit {
     return resultStripe;
   }
 
-
   //garantee to return promise
   private async createOrder(basket: Basket | null) {
     if (!basket) throw new Error('Basket is null');
@@ -127,7 +139,7 @@ export class CheckoutPaymentComponent implements OnInit {
 
     return firstValueFrom(this.checkoutService.CreateOrder(ordertoCreate));
   }
- 
+
   private getOrderToCreate(basket: Basket): OrdertoCreate {
     const DeliveryMethodId = this.checkoutForm
       ?.get('deliveryForm')
