@@ -25,6 +25,7 @@ namespace API.Extensions
 
 
             //extend the functionality by extension metonds
+            Services.AddSingleton<IResponseCacheInterface,ResponseCacheService>();
             Services.AddScoped<IProductRepository, ProductRepository>();
             Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             Services.AddScoped<IBasketRepository, BasketRepository>();
