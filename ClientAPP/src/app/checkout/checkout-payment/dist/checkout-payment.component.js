@@ -118,6 +118,8 @@ var CheckoutPaymentComponent = /** @class */ (function () {
                     case 0:
                         this.loading = true;
                         basket = this.basketService.getCurrentBasketValue();
+                        if (!basket)
+                            throw new Error('can not find basket');
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 4, 5, 6]);
@@ -128,7 +130,8 @@ var CheckoutPaymentComponent = /** @class */ (function () {
                     case 3:
                         paymentResult = _a.sent();
                         if (paymentResult.paymentIntent) {
-                            this.basketService.deleteLocalBasket();
+                            // this.basketService.deleteLocalBasket();
+                            this.basketService.deleteBasket(basket);
                             //delete form local storage application storage,
                             console.log(createOrder);
                             NavigationExtras = { state: createOrder };

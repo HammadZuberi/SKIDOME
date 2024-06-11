@@ -4,33 +4,91 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Errors;
 using Core.Entities;
+using Core.Entities.OrderAggregate;
 using Core.Inerfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace API.Controllers
 {
     public class PaymentsController : BaseApiController
     {
         private readonly IPaymentService _paymentService;
-        public PaymentsController(IPaymentService paymentService)
+        private const string WhSecret = "whsec_be12b0a358c876745c1546e0702cfd3acf8cd5555e1a5719d0bcdf85ca0a7162";
+        private readonly ILogger<PaymentsController> _logger;
+        public PaymentsController(IPaymentService paymentService, ILogger<PaymentsController> logger)
         {
+            _logger = logger;
             this._paymentService = paymentService;
-            
+
         }
 
 
         [Authorize]
         [HttpPost("{basketId}")]
-        public async Task<ActionResult<CustomerBasket>> CreateorUpdatePAymentIntent(string basketId){
+        public async Task<ActionResult<CustomerBasket>> CreateorUpdatePAymentIntent(string basketId)
+        {
 
-        var basket = await _paymentService.CreateOrUpdatePaymentIntenet(basketId);
-        
-        if(basket == null)
-        return BadRequest(new ApiResponse(400, "Problem with your basket"));
+            var basket = await _paymentService.CreateOrUpdatePaymentIntenet(basketId);
 
-        return basket;
+            if (basket == null)
+                return BadRequest(new ApiResponse(400, "Problem with your basket"));
+
+            return basket;
+
+
+        }
+        [HttpPost("webhook")]
+        public async Task<ActionResult> StripeWebhook()
+        {
+
+            var json = await new StreamReader(Request.Body).ReadToEndAsync();
+
+
+            try
+            {
+
+                //verify comming form Stripe;
+                var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], WhSecret,  throwOnApiVersionMismatch: false);
+                PaymentIntent intent;
+                Order order;
+
+                // Handle the event
+                if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
+                {
+                    intent = (PaymentIntent)stripeEvent.Data.Object;
+                    _logger.LogInformation("Payment failed ", intent.Id);
+                    order = await _paymentService.UpdateOrderPaymentFailed(intent.Id);
+                     _logger.LogInformation("Payment  to update order ", order.Id);
+                  
+                }
+                else if (stripeEvent.Type == Events.PaymentIntentSucceeded)
+                {
+                    intent = (PaymentIntent)stripeEvent.Data.Object;
+                    _logger.LogInformation("Payment succeded ", intent.Id);
+                    //todo 
+                    //update order with the new status
+                    
+                    order = await _paymentService.UpdateOrderPaymentSucceeded(intent.Id);
+                    
+                     _logger.LogInformation("ORDER UPDATE TO PAYMENT SUCCESS  ", order.Id);
+                }
+                // ... handle other event types
+                else
+                {
+                    Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+                }
+
+                return Ok();
+            }
+            catch (StripeException e)
+            {
+                return BadRequest();
+            }
+
+        }
 
     }
-    }
+
 }

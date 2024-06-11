@@ -65,8 +65,10 @@ export class CheckoutPaymentComponent implements OnInit {
         this.cardExpiry.mount(this.cardExpiryElement?.nativeElement);
         this.cardExpiry.on('change', (event) => {
           this.cardExpiryComplte = event.complete;
-          if (event.error) {this.cardErrors = event.error.message; console.log(event.error.message);}
-          else this.cardErrors = null;
+          if (event.error) {
+            this.cardErrors = event.error.message;
+            console.log(event.error.message);
+          } else this.cardErrors = null;
         });
 
         this.cardCvc = elements.create('cardCvc');
@@ -91,13 +93,14 @@ export class CheckoutPaymentComponent implements OnInit {
   async submitOrder() {
     this.loading = true;
     const basket = this.basketService.getCurrentBasketValue();
-
+    if (!basket) throw new Error('can not find basket');
     try {
       const createOrder = await this.createOrder(basket);
       const paymentResult = await this.confirmPaymentStripe(basket);
 
       if (paymentResult.paymentIntent) {
-        this.basketService.deleteLocalBasket();
+        // this.basketService.deleteLocalBasket();
+        this.basketService.deleteBasket(basket);
         //delete form local storage application storage,
         console.log(createOrder);
         const NavigationExtras: NavigationExtras = { state: createOrder };

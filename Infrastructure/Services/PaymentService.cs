@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Entities;
 using Core.Entities.OrderAggregate;
 using Core.Inerfaces;
+using Core.Specifications;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 using Product = Core.Entities.Product;
@@ -33,7 +35,7 @@ namespace Infrastructure.Services
             var basket = await _basketRepo.GetCustomerBasket(basketId);
 
             if (basket == null) return null;
-            
+
             var shippingPrice = 0m;
 
             if (basket.DileveryMethodId.HasValue)
@@ -95,6 +97,28 @@ namespace Infrastructure.Services
             await _basketRepo.UpdateCustomerBasket(basket);
             return basket;
 
+        }
+
+        public async Task<Order> UpdateOrderPaymentFailed(string paymentIntentId)
+        {
+            var spec = new OrderByPaymentIntenIdSpecification(paymentIntentId);
+            var order = await _unitOfWork.Repository<Order>().GetEntityWithSpecification(spec);
+            if (order == null) return null;
+
+            order.Status = OrderStatus.PaymentFailed;
+            await _unitOfWork.Complete();
+            return order;
+        }
+
+        public async Task<Order> UpdateOrderPaymentSucceeded(string paymentIntentId)
+        {
+            var spec = new OrderByPaymentIntenIdSpecification(paymentIntentId);
+            var order = await _unitOfWork.Repository<Order>().GetEntityWithSpecification(spec);
+            if (order == null) return null;
+
+            order.Status = OrderStatus.PaymentRecevied;
+            await _unitOfWork.Complete();
+            return order;
         }
     }
 }
