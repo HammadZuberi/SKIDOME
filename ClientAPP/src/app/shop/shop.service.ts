@@ -5,7 +5,7 @@ import { Product } from '../shared/Models/Product';
 import { Brand } from '../shared/Models/Brand';
 import { Type } from '../shared/Models/Type';
 import { productParam } from '../shared/Models/ProductParam';
-import { map, of } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -15,17 +15,36 @@ export class ShopService {
   products: Product[] = [];
   brands: Brand[] = [];
   types: Type[] = [];
+  pagination?: Pagination<Product[]>;
+  shopParams = new productParam();
+  //keyvalue pair for cache class property
+  productCache = new Map();
   constructor(private http: HttpClient) {}
 
-  getProducts(prodParam: productParam) {
+  getProducts(useCache = true): Observable<Pagination<Product[]>> {
+    if (!useCache) this.productCache = new Map();
+
+    if (this.productCache.size > 0 && useCache) {
+      if (this.productCache.has(Object.values(this.shopParams).join('-'))) {
+        //if key matches
+        this.pagination = this.productCache.get(
+          Object.values(this.shopParams).join('-')
+        );
+
+        if (this.pagination) return of(this.pagination);
+      }
+    }
+
     let params = new HttpParams();
-    if (prodParam.TypeId) params = params.append('typeId', prodParam.TypeId);
-    if (prodParam.BrandId > 0)
-      params = params.append('brandId', prodParam.BrandId);
-    if (prodParam.search) params = params.append('search', prodParam.search);
-    params = params.append('sort', prodParam.SortOptions);
-    params = params.append('pageSize', prodParam.pageSize);
-    params = params.append('pageIndex', prodParam.pageNumber);
+    if (this.shopParams.TypeId)
+      params = params.append('typeId', this.shopParams.TypeId);
+    if (this.shopParams.BrandId > 0)
+      params = params.append('brandId', this.shopParams.BrandId);
+    if (this.shopParams.search)
+      params = params.append('search', this.shopParams.search);
+    params = params.append('sort', this.shopParams.SortOptions);
+    params = params.append('pageSize', this.shopParams.pageSize);
+    params = params.append('pageIndex', this.shopParams.pageNumber);
 
     return this.http
       .get<Pagination<Product[]>>(this.baseurl + 'products', {
@@ -33,12 +52,25 @@ export class ShopService {
       })
       .pipe(
         map((response) => {
-          this.products = response.data;
+          // this.products = response.data;
+          this.productCache.set(
+            Object.values(this.shopParams).join('-'),
+            response
+          );
+          // this.products = [...this.products, ...response.data];
+          this.pagination = response;
           return response;
         })
       );
   }
 
+  setShopParams(params: productParam) {
+    this.shopParams = params;
+  }
+
+  getShopPrams() {
+    return this.shopParams;
+  }
   getProductsById(id: number) {
     //get product from local list
     const product = this.products.find((p) => p.id === id);

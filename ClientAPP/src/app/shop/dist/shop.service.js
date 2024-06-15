@@ -9,6 +9,7 @@ exports.__esModule = true;
 exports.ShopService = void 0;
 var http_1 = require("@angular/common/http");
 var core_1 = require("@angular/core");
+var ProductParam_1 = require("../shared/Models/ProductParam");
 var rxjs_1 = require("rxjs");
 var ShopService = /** @class */ (function () {
     function ShopService(http) {
@@ -17,27 +18,50 @@ var ShopService = /** @class */ (function () {
         this.products = [];
         this.brands = [];
         this.types = [];
+        this.shopParams = new ProductParam_1.productParam();
+        //keyvalue pair for cache class property
+        this.productCache = new Map();
     }
-    ShopService.prototype.getProducts = function (prodParam) {
+    ShopService.prototype.getProducts = function (useCache) {
         var _this = this;
+        if (useCache === void 0) { useCache = true; }
+        if (!useCache)
+            this.productCache = new Map();
+        if (this.productCache.size > 0 && useCache) {
+            if (this.productCache.has(Object.values(this.shopParams).join('-'))) {
+                //if key matches
+                this.pagination = this.productCache.get(Object.values(this.shopParams).join('-'));
+                if (this.pagination)
+                    return rxjs_1.of(this.pagination);
+            }
+        }
         var params = new http_1.HttpParams();
-        if (prodParam.TypeId)
-            params = params.append('typeId', prodParam.TypeId);
-        if (prodParam.BrandId > 0)
-            params = params.append('brandId', prodParam.BrandId);
-        if (prodParam.search)
-            params = params.append('search', prodParam.search);
-        params = params.append('sort', prodParam.SortOptions);
-        params = params.append('pageSize', prodParam.pageSize);
-        params = params.append('pageIndex', prodParam.pageNumber);
+        if (this.shopParams.TypeId)
+            params = params.append('typeId', this.shopParams.TypeId);
+        if (this.shopParams.BrandId > 0)
+            params = params.append('brandId', this.shopParams.BrandId);
+        if (this.shopParams.search)
+            params = params.append('search', this.shopParams.search);
+        params = params.append('sort', this.shopParams.SortOptions);
+        params = params.append('pageSize', this.shopParams.pageSize);
+        params = params.append('pageIndex', this.shopParams.pageNumber);
         return this.http
             .get(this.baseurl + 'products', {
             params: params
         })
             .pipe(rxjs_1.map(function (response) {
-            _this.products = response.data;
+            // this.products = response.data;
+            _this.productCache.set(Object.values(_this.shopParams).join('-'), response);
+            // this.products = [...this.products, ...response.data];
+            _this.pagination = response;
             return response;
         }));
+    };
+    ShopService.prototype.setShopParams = function (params) {
+        this.shopParams = params;
+    };
+    ShopService.prototype.getShopPrams = function () {
+        return this.shopParams;
     };
     ShopService.prototype.getProductsById = function (id) {
         //get product from local list
