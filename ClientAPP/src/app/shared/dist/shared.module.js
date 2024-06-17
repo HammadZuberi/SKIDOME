@@ -40,6 +40,7 @@ var SharedModule = /** @class */ (function () {
                 pagination_1.PaginationModule.forRoot(),
                 carousel_1.CarouselModule.forRoot(),
                 forms_1.ReactiveFormsModule,
+                forms_1.FormsModule,
                 dropdown_1.BsDropdownModule.forRoot(),
                 stepper_1.CdkStepperModule,
                 router_1.RouterModule

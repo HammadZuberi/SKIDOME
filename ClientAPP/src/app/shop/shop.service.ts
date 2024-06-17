@@ -18,7 +18,7 @@ export class ShopService {
   pagination?: Pagination<Product[]>;
   shopParams = new productParam();
   //keyvalue pair for cache class property
-  productCache = new Map();
+  productCache = new Map<string, Pagination<Product[]>>();
   constructor(private http: HttpClient) {}
 
   getProducts(useCache = true): Observable<Pagination<Product[]>> {
@@ -73,11 +73,19 @@ export class ShopService {
   }
   getProductsById(id: number) {
     //get product from local list
-    const product = this.products.find((p) => p.id === id);
+    const product = [...this.productCache.values()].reduce(
+      (acc, paginatedResult) => {
+        //... spread operator
+        return { ...acc, ...paginatedResult.data.find((x) => x.id === id) };
+      },
+      {} as Product
+    );
+
+    console.log(product);
+
+    if (Object.keys(product).length !== 0) return of(product);
     //return observable instead of product object
-    if (product) return of(product);
-    // let params= new HttpParams();
-    // params= params.append("id",id);
+    // if (product) return of(product);
     return this.http.get<Product>(this.baseurl + 'Products/' + id);
   }
 

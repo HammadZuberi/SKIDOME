@@ -114,9 +114,8 @@ var ShopComponent = /** @class */ (function () {
     ShopComponent.prototype.onReset = function () {
         if (this.search)
             this.search.nativeElement.value = '';
-        var params = new ProductParam_1.productParam();
-        this.shopService.setShopParams(params);
-        this.shopParams = params;
+        this.shopParams = new ProductParam_1.productParam();
+        this.shopService.setShopParams(this.shopParams);
         this.getProducts();
     };
     __decorate([

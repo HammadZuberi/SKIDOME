@@ -4,6 +4,7 @@
     <pagination [boundaryLinks]="true"
      
      [maxSize]="10" 
+     [ngModel]="pageNumber"
      (pageChanged)="onPageChanged($event)"
      [itemsPerPage]="pageSize"
      previousText="&lsaquo;"
