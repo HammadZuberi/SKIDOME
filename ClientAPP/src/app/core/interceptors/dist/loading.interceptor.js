@@ -9,6 +9,7 @@ exports.__esModule = true;
 exports.LoadingInterceptor = void 0;
 var core_1 = require("@angular/core");
 var rxjs_1 = require("rxjs");
+var environment_development_1 = require("src/environments/environment.development");
 var LoadingInterceptor = /** @class */ (function () {
     function LoadingInterceptor(busyservice) {
         this.busyservice = busyservice;
@@ -25,7 +26,7 @@ var LoadingInterceptor = /** @class */ (function () {
         this.busyservice.busy();
         return next.handle(request).pipe(
         // delay(1000),
-        rxjs_1.delay(200), rxjs_1.finalize(function () { return _this.busyservice.idle(); }));
+        environment_development_1.environment.production ? rxjs_1.identity : rxjs_1.delay(200), rxjs_1.finalize(function () { return _this.busyservice.idle(); }));
     };
     LoadingInterceptor = __decorate([
         core_1.Injectable()

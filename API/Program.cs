@@ -8,11 +8,13 @@ using Infrastructure;
 using Infrastructure.Data;
 using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Core.Entities.Identity;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +40,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerDocument();
 }
 //to serve images
-app.UseStaticFiles();
+
+app.UseStaticFiles();//wwwroot
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Content")),
+    RequestPath = "/Content"
+});
 
 
 app.UseHttpsRedirection();
@@ -49,7 +57,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+//for angular Routing
+app.MapFallbackToController("Index","Fallback");
 //for creating auto migration and our db again when app runs if not saved prev
 
 using var scope = app.Services.CreateScope();
@@ -57,7 +66,7 @@ var services = scope.ServiceProvider;
 var context = services.GetRequiredService<StoreContext>();
 var identitycontext = services.GetRequiredService<AppIdentityDbContext>();
 //log program class
-var userManager =  services.GetRequiredService<UserManager<AppUser>>();
+var userManager = services.GetRequiredService<UserManager<AppUser>>();
 var logger = services.GetRequiredService<ILogger<Program>>();
 try
 {

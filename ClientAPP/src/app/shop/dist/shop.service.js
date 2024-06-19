@@ -29,10 +29,11 @@ var http_1 = require("@angular/common/http");
 var core_1 = require("@angular/core");
 var ProductParam_1 = require("../shared/Models/ProductParam");
 var rxjs_1 = require("rxjs");
+var environment_development_1 = require("src/environments/environment.development");
 var ShopService = /** @class */ (function () {
     function ShopService(http) {
         this.http = http;
-        this.baseurl = 'https://localhost:5001/api/';
+        this.baseurl = environment_development_1.environment.apiUrl;
         this.products = [];
         this.brands = [];
         this.types = [];
