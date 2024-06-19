@@ -16,7 +16,8 @@ var LoadingInterceptor = /** @class */ (function () {
     LoadingInterceptor.prototype.intercept = function (request, next) {
         var _this = this;
         if (request.url.includes('emailExists') ||
-            (request.method == 'POST' && request.url.includes('orders'))) {
+            (request.method == 'POST' && request.url.includes('orders')) ||
+            request.method === 'DELETE') {
             // return next.handle(request);
             //rxjx operator
             return next.handle(request);
