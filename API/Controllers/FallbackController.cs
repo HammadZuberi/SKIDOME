@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
-{
+{ 
     public class FallbackController : Controller
     {
         //anglar View 

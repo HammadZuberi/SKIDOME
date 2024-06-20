@@ -39,7 +39,9 @@ namespace API.Extensions
             Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             Services.AddDbContext<StoreContext>(opt =>
             {
-                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                // opt                .UseSqlite(config.GetConnectionString("DefaultConnection"));
+                
+                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
 
             Services.AddSingleton<IConnectionMultiplexer>(c =>

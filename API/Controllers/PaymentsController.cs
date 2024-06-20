@@ -15,12 +15,13 @@ namespace API.Controllers
     public class PaymentsController : BaseApiController
     {
         private readonly IPaymentService _paymentService;
-        private const string WhSecret = "whsec_be12b0a358c876745c1546e0702cfd3acf8cd5555e1a5719d0bcdf85ca0a7162";
+        private readonly string WhSecret;
         private readonly ILogger<PaymentsController> _logger;
-        public PaymentsController(IPaymentService paymentService, ILogger<PaymentsController> logger)
+        public PaymentsController(IPaymentService paymentService, ILogger<PaymentsController> logger, IConfiguration config)
         {
             _logger = logger;
             this._paymentService = paymentService;
+            WhSecret = config.GetSection("StripeSettings:WhSecret").Value;
 
         }
 
@@ -50,7 +51,7 @@ namespace API.Controllers
             {
 
                 //verify comming form Stripe;
-                var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], WhSecret,  throwOnApiVersionMismatch: false);
+                var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], WhSecret, throwOnApiVersionMismatch: false);
                 PaymentIntent intent;
                 Order order;
 
@@ -60,8 +61,8 @@ namespace API.Controllers
                     intent = (PaymentIntent)stripeEvent.Data.Object;
                     _logger.LogInformation("Payment failed ", intent.Id);
                     order = await _paymentService.UpdateOrderPaymentFailed(intent.Id);
-                     _logger.LogInformation("Payment  to update order ", order.Id);
-                  
+                    _logger.LogInformation("Payment  to update order ", order.Id);
+
                 }
                 else if (stripeEvent.Type == Events.PaymentIntentSucceeded)
                 {
@@ -69,10 +70,10 @@ namespace API.Controllers
                     _logger.LogInformation("Payment succeded ", intent.Id);
                     //todo 
                     //update order with the new status
-                    
+
                     order = await _paymentService.UpdateOrderPaymentSucceeded(intent.Id);
-                    
-                     _logger.LogInformation("ORDER UPDATE TO PAYMENT SUCCESS  ", order.Id);
+
+                    _logger.LogInformation("ORDER UPDATE TO PAYMENT SUCCESS  ", order.Id);
                 }
                 // ... handle other event types
                 else
