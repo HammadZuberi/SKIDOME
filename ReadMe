@@ -7,3 +7,34 @@ Stripe listen -f https://localhost:5001/api/Payments/webhook -e payment_intent.s
 . Your webhook signing secret is /api/Payments/webhook
 whsec_be12b0a358c876745c1546e0702cfd3acf8cd5555e1a5719d0bcdf85ca0a7162 
 whsec_be12b0a358c876745c1546e0702cfd3acf8cd5555e1a5719d0bcdf85ca0a7162
+
+
+C:\Users\hamma>node --version
+v16.20.2
+
+C:\Users\hamma>npm --version
+8.19.4
+
+C:\Users\hamma>npm --install -g @angular/cli@16.2
+Unknown command: "@angular/cli@16.2"
+
+To see a list of supported npm commands, run:
+  npm help
+
+C:\Users\hamma>npm i @angular/cli@16.2.0
+
+
+docker 
+
+// for publish
+
+ng build
+
+ dotnet ef databse drop -p .\Infrastructure\ -s .\API\      
+ 
+>>  dotnet ef database drop -p .\Infrastructure\ -s .\API\   --context StoreContext  
+dotnet watch --no-hot-reload
+
+dotnet ef migrations add "Postgres Initaite " -p .\Infrastructure\ -s .\API\   --context StoreContext   -o Data/Migrations
+
+dotnet ef migrations add "Postgres Initaite " -p .\Infrastructure\ -s .\API\   --context AppIdentityDbContext   -o Identity/Migrations

@@ -59,21 +59,21 @@ namespace API.Controllers
                 if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
                 {
                     intent = (PaymentIntent)stripeEvent.Data.Object;
-                    _logger.LogInformation("Payment failed ", intent.Id);
+                    _logger.LogInformation("Payment failed {id}", intent.Id);
                     order = await _paymentService.UpdateOrderPaymentFailed(intent.Id);
-                    _logger.LogInformation("Payment  to update order ", order.Id);
+                    _logger.LogInformation("Payment  to update order {id}", order.Id);
 
                 }
                 else if (stripeEvent.Type == Events.PaymentIntentSucceeded)
                 {
                     intent = (PaymentIntent)stripeEvent.Data.Object;
-                    _logger.LogInformation("Payment succeded ", intent.Id);
+                    _logger.LogInformation("Payment succeded {id}", intent.Id);
                     //todo 
                     //update order with the new status
 
                     order = await _paymentService.UpdateOrderPaymentSucceeded(intent.Id);
 
-                    _logger.LogInformation("ORDER UPDATE TO PAYMENT SUCCESS  ", order.Id);
+                    _logger.LogInformation("ORDER UPDATE TO PAYMENT SUCCESS {id} ", order.Id);
                 }
                 // ... handle other event types
                 else
@@ -85,6 +85,7 @@ namespace API.Controllers
             }
             catch (StripeException e)
             {
+                Console.WriteLine($"Failed to update payment failed: {e.StackTrace}");
                 return BadRequest();
             }
 

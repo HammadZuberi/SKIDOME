@@ -12,7 +12,7 @@ namespace Infrastructure.Data.Config
 
             builder.OwnsOne(i=> i.ItemOrdered,io=> {io.WithOwner();});
             
-            builder.Property(i=>i.Price).HasColumnType("decibel(18,2)");
+            builder.Property(i=>i.Price).HasColumnType("numeric(18,2)");
 
         }
     }

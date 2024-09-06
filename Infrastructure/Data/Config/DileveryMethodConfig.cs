@@ -9,7 +9,7 @@ namespace Infrastructure.Data.Config
     {
         public void Configure(EntityTypeBuilder<DeliveryMethod> builder)
         {
-            builder.Property(b=> b.Price).HasColumnType("decimal(10,2)");
+            builder.Property(b=> b.Price).HasColumnType("numeric(18,2)");
         }
     }
 }
